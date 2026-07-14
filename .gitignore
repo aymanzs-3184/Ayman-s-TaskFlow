@@ -1,0 +1,35 @@
+# ── Backend ────────────────────────────────────────
+**/target/
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+
+# Sensitive config — never commit
+**/application-prod.properties
+**/application-local.properties
+
+# IDE
+**/.idea/
+**/*.iml
+**/.classpath
+**/.project
+**/.settings/
+
+# ── Frontend ────────────────────────────────────────
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Environment files — never commit
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+
+# ── General ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+
+# ── VS Code ─────────────────────────────────────────
+.vscode
