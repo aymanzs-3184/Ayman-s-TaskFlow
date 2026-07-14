@@ -1,0 +1,23 @@
+# ── Backend sensitive config ─────────────────────────
+psr stack backend/api/src/main/resources/application.properties
+psr stack backend/api/src/main/resources/application-prod.properties
+
+# ── Backend build output ─────────────────────────────
+psr stack backend/api/target/
+
+# ── Frontend ─────────────────────────────────────────
+psr stack frontend/tutorial-task-manager/node_modules/
+psr stack frontend/tutorial-task-manager/dist/
+psr stack frontend/tutorial-task-manager/.env
+psr stack frontend/tutorial-task-manager/.env.local
+psr stack frontend/tutorial-task-manager/.env.production
+psr stack frontend/tutorial-task-manager/.env.development
+
+# ── IDE ──────────────────────────────────────────────
+.idea/
+*.iml
+
+# ── General ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
