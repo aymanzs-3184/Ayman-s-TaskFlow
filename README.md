@@ -209,4 +209,4 @@ Another process is using the port. Either stop it or change `server.port` in `ap
 
 ## Author
 
-Built by Ayman as a personal learning project to strengthen my full-stack development skills across React, Spring Boot, and PostgreSQL.
+Built by Ayman Zuhair Shashavali, a final year Computer Science Student at Monash University as a personal learning project to strengthen my full-stack development skills across React, Spring Boot, and PostgreSQL.
