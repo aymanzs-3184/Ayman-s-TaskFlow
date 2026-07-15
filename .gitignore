@@ -1,6 +1,7 @@
 # ── Backend sensitive config ─────────────────────────
-psr stack backend/api/src/main/resources/application.properties
 psr stack backend/api/src/main/resources/application-prod.properties
+psr stack backend/api/src/main/resources/application-local.properties
+psr stack backend/api/src/main/resources/.env
 
 # ── Backend build output ─────────────────────────────
 psr stack backend/api/target/
@@ -21,3 +22,4 @@ psr stack frontend/tutorial-task-manager/.env.development
 .DS_Store
 Thumbs.db
 *.log
+.env
