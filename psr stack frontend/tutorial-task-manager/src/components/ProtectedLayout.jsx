@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Sidebar from './Sidebar';
-import Topbar  from './Topbar';
+import Sidebar from './SideBar';
+import Topbar  from './TopBar';
 
 export default function ProtectedLayout() {
   const { user } = useAuth();

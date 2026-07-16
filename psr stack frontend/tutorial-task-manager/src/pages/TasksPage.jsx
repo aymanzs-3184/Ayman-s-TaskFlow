@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { taskService } from '../api/taskService';
+import { taskService } from '../api/TaskService';
 
 const statusStripe = {
   todo:       'bg-blue-400',

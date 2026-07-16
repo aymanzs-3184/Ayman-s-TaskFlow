@@ -1,4 +1,4 @@
-import api from './axios';
+import api from './Axios';
 
 export const authService = {
   login: (email, password) =>

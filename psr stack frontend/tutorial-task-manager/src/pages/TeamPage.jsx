@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userService } from '../api/userService';
+import { userService } from '../api/UserService';
 
 const avatarColors = [
   'bg-indigo-500', 'bg-pink-500', 'bg-amber-500',

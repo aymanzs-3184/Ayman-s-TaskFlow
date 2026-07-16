@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { taskService } from '../api/taskService';
-import { userService } from '../api/userService';
+import { taskService } from '../api/TaskService';
+import { userService } from '../api/UserService';
 
 const priorities = ['high', 'medium', 'low'];
 const priorityStyles = {
