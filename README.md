@@ -13,6 +13,7 @@ TaskFlow is a full-stack task management application I built to reinforce my ski
 | Database | PostgreSQL 16 |
 | Drag and Drop | @dnd-kit/core |
 | Build Tools | Vite (frontend), Maven (backend) |
+| Containerisation | Docker, Docker Compose |
 
 ---
 
@@ -31,42 +32,126 @@ TaskFlow is a full-stack task management application I built to reinforce my ski
 ## Project Structure
 
 ```
-psr stack project/
+Ayman's-TaskFlow/
+├── docker-compose.yml                        # Runs the full stack in Docker
+├── .env                                      # Your local environment variables (gitignored)
+├── .env.example                              # Template showing required variables
 ├── psr stack backend/
-│   └── api/                         # Spring Boot application
+│   └── api/
+│       ├── Dockerfile                        # Multi-stage Spring Boot image
 │       ├── src/main/java/com/taskflow/api/
-│       │   ├── controller/          # REST controllers
-│       │   ├── service/             # Business logic
-│       │   ├── repository/          # JPA repositories
-│       │   ├── model/               # JPA entities
-│       │   ├── dto/                 # Data transfer objects
-│       │   └── security/            # JWT auth filter and config
+│       │   ├── controller/                   # REST controllers
+│       │   ├── service/                      # Business logic
+│       │   ├── repository/                   # JPA repositories
+│       │   ├── model/                        # JPA entities
+│       │   ├── dto/                          # Data transfer objects
+│       │   └── security/                     # JWT auth filter and config
 │       └── src/main/resources/
-│           └── application.properties
+│           └── application.properties        # Uses environment variable placeholders
 └── psr stack frontend/
-    └── tutorial-task-manager/       # React application
+    └── tutorial-task-manager/
+        ├── Dockerfile                        # Multi-stage React + nginx image
+        ├── nginx.conf                        # React Router config for nginx
         └── src/
-            ├── api/                 # Axios instance and service files
-            ├── components/          # Reusable UI components
-            ├── context/             # Auth context
-            └── pages/               # Board, Tasks, and Team pages
+            ├── api/                          # Axios instance and service files
+            ├── components/                   # Reusable UI components
+            ├── context/                      # Auth context
+            └── pages/                        # Board, Tasks, and Team pages
 ```
 
 ---
 
-## Prerequisites
+## Running with Docker (Recommended)
 
-Make sure you have the following installed before running the project:
+This is the easiest way to run the full stack. Docker handles the database, backend, and frontend for you.
+
+### Prerequisites
+
+- **Docker Desktop** — [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/aymanzs-3184/Ayman-s-TaskFlow.git
+cd "Ayman's-TaskFlow"
+```
+
+### 2. Create your environment file
+
+Copy the example file and fill in your own values:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set your values:
+
+```env
+SPRING_DATASOURCE_USERNAME=taskflow_user
+SPRING_DATASOURCE_PASSWORD=choose_a_strong_password
+JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+JWT_EXPIRATION=86400000
+VITE_API_URL=http://localhost:8080
+```
+
+> The JWT secret must be a hex string of at least 64 characters. You can generate one at [codebeautify.org/generate-random-string](https://codebeautify.org/generate-random-string).
+
+### 3. Start the full stack
+
+```bash
+docker compose up --build
+```
+
+Docker will:
+- Pull and start a PostgreSQL 16 container
+- Build and start the Spring Boot API container
+- Build and start the React frontend container (served by nginx)
+
+The first build takes a few minutes while Maven downloads dependencies and npm installs packages. Subsequent starts are much faster.
+
+### 4. Open the app
+
+| Service | URL |
+|---|---|
+| Frontend (React) | http://localhost |
+| Backend (Spring Boot API) | http://localhost:8080 |
+
+Register an account and start creating tasks.
+
+### Stopping the stack
+
+```bash
+# Stop containers but keep data
+docker compose down
+
+# Stop containers and delete all data (wipes the database)
+docker compose down -v
+```
+
+### Rebuilding after code changes
+
+```bash
+# Rebuild everything
+docker compose up --build
+
+# Rebuild only the backend
+docker compose build --no-cache api
+docker compose up
+```
+
+---
+
+## Running Locally Without Docker
+
+Use this approach if you want to run the app directly during development without building Docker images.
+
+### Prerequisites
 
 - **Java 21** — [adoptium.net](https://adoptium.net)
 - **Maven 3.9+** — [maven.apache.org](https://maven.apache.org)
 - **Node.js 20+** — [nodejs.org](https://nodejs.org)
 - **PostgreSQL 16** — [postgresql.org](https://www.postgresql.org)
 - **pgAdmin** (optional but recommended) — [pgadmin.org](https://www.pgadmin.org)
-
----
-
-## Backend Setup
 
 ### 1. Create the PostgreSQL database
 
@@ -81,26 +166,23 @@ GRANT ALL ON SCHEMA public TO taskflow_user;
 
 ### 2. Configure application.properties
 
-Create `psr stack backend/api/src/main/resources/application.properties`:
+Create `psr stack backend/api/src/main/resources/application-local.properties`:
 
 ```properties
-server.port=8080
-
-spring.datasource.url=jdbc:postgresql://localhost:5432/taskflowdb
-spring.datasource.username=taskflow_user
-spring.datasource.password=yourpassword
-spring.datasource.driver-class-name=org.postgresql.Driver
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.open-in-view=false
-
-jwt.secret=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-jwt.expiration=86400000
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/taskflowdb
+SPRING_DATASOURCE_USERNAME=taskflow_user
+SPRING_DATASOURCE_PASSWORD=yourpassword
+JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+JWT_EXPIRATION=86400000
 ```
 
-> Replace `yourpassword` with the password you set in step 1. This file is gitignored and should never be committed.
+Then activate the local profile in IntelliJ: **Run → Edit Configurations → Environment variables** and add:
+
+```
+SPRING_PROFILES_ACTIVE=local
+```
+
+> This file is gitignored and should never be committed.
 
 ### 3. Run the backend
 
@@ -109,36 +191,14 @@ cd "psr stack backend/api"
 ./mvnw spring-boot:run
 ```
 
-The API will start on `http://localhost:8080`.
+The API starts on `http://localhost:8080`.
 
-### 4. Verify it is running
-
-Open Postman and send:
-
-```
-POST http://localhost:8080/api/auth/register
-Body (JSON):
-{
-  "name": "Your Name",
-  "email": "you@example.com",
-  "password": "password123"
-}
-```
-
-You should receive a JWT token in the response.
-
----
-
-## Frontend Setup
-
-### 1. Install dependencies
+### 4. Set up the frontend
 
 ```bash
 cd "psr stack frontend/tutorial-task-manager"
 npm install
 ```
-
-### 2. Create the environment file
 
 Create `psr stack frontend/tutorial-task-manager/.env.development`:
 
@@ -146,23 +206,27 @@ Create `psr stack frontend/tutorial-task-manager/.env.development`:
 VITE_API_URL=http://localhost:8080
 ```
 
-### 3. Start the development server
+### 5. Start the frontend
 
 ```bash
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`.
+The app is available at `http://localhost:5173`.
 
 ---
 
-## Running the Full Application
+## Environment Variables Reference
 
-1. Start PostgreSQL (if not already running)
-2. Start the Spring Boot backend with `./mvnw spring-boot:run`
-3. Start the React frontend with `npm run dev`
-4. Open `http://localhost:5173` in your browser
-5. Register an account and start creating tasks
+These variables are required in your `.env` file (Docker) or local properties file (manual setup).
+
+| Variable | Description | Example |
+|---|---|---|
+| `SPRING_DATASOURCE_USERNAME` | PostgreSQL username | `taskflow_user` |
+| `SPRING_DATASOURCE_PASSWORD` | PostgreSQL password | `mypassword` |
+| `JWT_SECRET` | Hex string used to sign JWT tokens | 64-char hex string |
+| `JWT_EXPIRATION` | Token expiry in milliseconds | `86400000` (24 hours) |
+| `VITE_API_URL` | API base URL for the frontend | `http://localhost:8080` |
 
 ---
 
@@ -205,8 +269,20 @@ GRANT ALL ON SCHEMA public TO taskflow_user;
 
 Another process is using the port. Either stop it or change `server.port` in `application.properties`.
 
+**Docker — frontend shows blank page after login**
+
+Check that `VITE_API_URL` in your `.env` file matches the address your browser uses to reach the API. For local Docker it should be `http://localhost:8080`.
+
+**Docker — API container exits immediately**
+
+Check the API logs for the error:
+```bash
+docker compose logs api
+```
+The most common cause is a missing or malformed environment variable in `.env`.
+
 ---
 
 ## Author
 
-Built by Ayman as a personal learning project to strengthen my full-stack development skills across React, Spring Boot, and PostgreSQL.
+Built by Ayman Zuhair Shashavali, a final year Computer Science student at Monash University, as a personal learning project to strengthen full-stack development skills across React, Spring Boot, and PostgreSQL.
