@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserRepository userRepository;
 
-    @Value("${VITE_API_URL}")
+    @Value("${ALLOWED_ORIGIN_VERCEL:https://localhost}")
     private String vercelOrigin;
 
     @Bean
